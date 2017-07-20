@@ -18,18 +18,22 @@ compile with the command: gcc demo_rx.c rs232.c -Wall -Wextra -o2 -o test_rx
 
 #include "port.h"
 
+void calcCheckSum(unsigned char* buf, int size, unsigned char* high, unsigned char* low);
+int makeTerminationMessage(unsigned char* buf, int recNum, char termCode = 'N');
 
 int main()
 {
     char mode[4] = { '8','N','1',0 };
-    port rx(2, 9600, mode);
+	int size;
+    port rx(10, 9600, mode);
 
-    port tx(3, 9600, mode);
+    port tx(12, 9600, mode);
 
 
-    unsigned char buf[] = {2,'1','|','\\',3};
+	unsigned char buf[10240];
+	size = makeTerminationMessage(buf, 1, 'F');
 
-    tx.transmit(buf, 5);
+    tx.transmit(buf, size);
 
 
     rx.listen();
