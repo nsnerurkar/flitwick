@@ -111,10 +111,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.c" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="message_maker.c" />
     <ClCompile Include="rs232.c" />
+    <ClCompile Include="port.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="message_structures.h" />
+    <ClInclude Include="port.h" />
     <ClInclude Include="rs232.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

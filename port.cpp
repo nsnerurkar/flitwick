@@ -105,7 +105,7 @@ void port::print(unsigned char buf)
             printf("<ACK>");
             break;
         case 10:
-            printf("<LF>");
+            printf("<LF>\n");
             break;
         case 13:
             printf("<CR>");
