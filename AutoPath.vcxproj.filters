@@ -24,7 +24,7 @@
     <ClCompile Include="port.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="message_maker.c">
+    <ClCompile Include="message_maker.h">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
