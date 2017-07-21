@@ -1,6 +1,6 @@
 #ifndef _MESSAGE_MAKER_H_
 #define _MESSAGE_MAKER_H_
-#include "message_structures.h"
+/*
 #include <stdio.h>
 
 void calcCheckSum(unsigned char* buf, int size, unsigned char* high, unsigned char* low)
@@ -45,7 +45,7 @@ int makeTerminationMessage(unsigned char* buf, int recNum,char termCode = 'N')
 
     return(size);
 }
-
+*/
 
 
 

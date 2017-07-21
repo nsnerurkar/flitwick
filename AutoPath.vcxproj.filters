@@ -24,8 +24,8 @@
     <ClCompile Include="port.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="message_maker.c">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="d10lis.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,7 +35,10 @@
     <ClInclude Include="port.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="message_structures.h">
+    <ClInclude Include="d10lis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="message_maker.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

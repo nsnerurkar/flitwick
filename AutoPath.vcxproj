@@ -111,13 +111,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="d10lis.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="message_maker.c" />
     <ClCompile Include="rs232.c" />
     <ClCompile Include="port.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="message_structures.h" />
+    <ClInclude Include="d10lis.h" />
+    <ClInclude Include="message_maker.h" />
     <ClInclude Include="port.h" />
     <ClInclude Include="rs232.h" />
   </ItemGroup>
