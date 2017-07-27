@@ -24,8 +24,20 @@
     <ClCompile Include="port.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="message_maker.h">
-      <Filter>Header Files</Filter>
+    <ClCompile Include="d10lis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="layer1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="d10handler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shell.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sqlite3.c">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,7 +47,19 @@
     <ClInclude Include="port.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="message_structures.h">
+    <ClInclude Include="d10lis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="layer1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="d10handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sqlite3ext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

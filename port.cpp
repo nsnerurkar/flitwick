@@ -7,6 +7,7 @@
 #include <unistd.h>
 #endif
 
+
 #include "rs232.h"
 
 port::port()
@@ -35,32 +36,33 @@ port::~port()
 }
 
 
-void port::listen()
+int port::receive()
+{   
+	unsigned char buf[4096];
+	int n = RS232_PollComport(com_port, buf, 4095);
+	for(int i = 0; i < n; ++i)
+	{
+		rxbuf.push(buf[i]);		
+	}
+	return(n);
+}
+
+int port::transmit()
 {
-    if (!port_open())
-        return;
-    while (1)
-    {
-        int n = RS232_PollComport(com_port, buf, 4095);
+	if (txbuf.size() <= 0)
+		return(-1);
+	unsigned char* buf = new unsigned char[txbuf.size()];
+	int size = txbuf.size();
+	for (int i = 0; i < size; ++i)
+	{
+		buf[i] = txbuf.front();
+		txbuf.pop();
+	}
 
-        if (n > 0)
-        {
-            buf[n] = 0;   /* always put a "null" at the end of a string! */
 
-            for (int i = 0; i < n; i++)
-            {
-                print(buf[i]);
-            }           
-        }
-        
-#ifdef _WIN32
-        Sleep(1000);
-#else
-        usleep(1000000);  /* sleep for 100 milliSeconds */
-#endif
-    }
-
-    port_close();
+	if (!RS232_SendBuf(com_port, buf, size))
+		return(-1);
+	return(0);
 }
 
 bool port::port_open()
@@ -78,6 +80,17 @@ void port::port_close()
     RS232_CloseComport(com_port);
 }
 
+void port::clearRxBuf()
+{
+	std::queue<unsigned char> empty;
+	std::swap(rxbuf, empty);
+}
+
+void port::clearTxBuf()
+{
+	std::queue<unsigned char> empty;
+	std::swap(txbuf, empty);
+}
 
 void port::print(unsigned char buf)
 {
@@ -121,11 +134,3 @@ void port::print(unsigned char buf)
     }
 }
 
-void port::transmit(unsigned char* buf,int size)
-{
-    if (!port_open())
-        return;
-    if(!RS232_SendBuf(com_port,buf,size))
-        printf("Cannot Transmit\n");
-    port_close();
-}

@@ -1,6 +1,7 @@
 #ifndef _PORT_H_
 #define _PORT_H_
 
+#include <queue>
 
 class port
 {
@@ -13,16 +14,20 @@ public:
     void print(unsigned char buf);
     bool port_open();
     void port_close();
-    void listen();
 
-    void transmit(unsigned char* buf,int size);
+    int receive();
+    int transmit();
+
+	void clearRxBuf();
+	void clearTxBuf();
+	
+	std::queue<unsigned char> rxbuf;
+	std::queue<unsigned char> txbuf;
 
 private:
     int com_port;
     int baud;
     char mode[4];
-
-    unsigned char buf[4096];
 };
 
 

@@ -16,28 +16,23 @@ compile with the command: gcc demo_rx.c rs232.c -Wall -Wextra -o2 -o test_rx
 #include <unistd.h>
 #endif
 
-#include "port.h"
+#include <stdio.h>
+#include "sqlite3.h"
 
-void calcCheckSum(unsigned char* buf, int size, unsigned char* high, unsigned char* low);
-int makeTerminationMessage(unsigned char* buf, int recNum, char termCode = 'N');
+int main(int argc, char* argv[]) {
+	sqlite3 *db;
+	char *zErrMsg = 0;
+	int rc;
 
-int main()
-{
-    char mode[4] = { '8','N','1',0 };
-	int size;
-    port rx(10, 9600, mode);
+	rc = sqlite3_open("test.db", &db);
 
-    port tx(12, 9600, mode);
-
-
-	unsigned char buf[10240];
-	size = makeTerminationMessage(buf, 1, 'F');
-
-    tx.transmit(buf, size);
-
-
-    rx.listen();
-
-    return(0);
+	if (rc) {
+		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		return(0);
+	}
+	else {
+		fprintf(stderr, "Opened database successfully\n");
+	}
+	sqlite3_close(db);
 }
 
