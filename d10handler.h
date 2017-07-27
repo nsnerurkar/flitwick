@@ -9,6 +9,9 @@
 
 class D10Handler
 {
+public:
+	D10Handler(int cport, int baud, char mode[]);
+	~D10Handler();
 
 	void start();
 	void stop(); 

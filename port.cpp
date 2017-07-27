@@ -30,6 +30,18 @@ port::port(int cport, int bd, char md[])
     mode[3] = md[3];
 }
 
+
+void port::initPort(int cport, int bd, char md[])
+{
+	com_port = cport;
+	baud = bd;
+	mode[0] = md[0];
+	mode[1] = md[1];
+	mode[2] = md[2];
+	mode[3] = md[3];
+}
+
+
 port::~port()
 {
 

@@ -17,22 +17,16 @@ compile with the command: gcc demo_rx.c rs232.c -Wall -Wextra -o2 -o test_rx
 #endif
 
 #include <stdio.h>
-#include "sqlite3.h"
+#include "d10handler.h"
 
-int main(int argc, char* argv[]) {
-	sqlite3 *db;
-	char *zErrMsg = 0;
-	int rc;
+int main(int argc, char* argv[]) 
+{
+	int com = 3;
+	int baud = 9600;
+	char mode[4] = { '8', 'N', '1', 0 };
 
-	rc = sqlite3_open("test.db", &db);
+	D10Handler dh(com, baud, mode);
 
-	if (rc) {
-		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-		return(0);
-	}
-	else {
-		fprintf(stderr, "Opened database successfully\n");
-	}
-	sqlite3_close(db);
+	dh.start();
 }
 

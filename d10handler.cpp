@@ -1,6 +1,13 @@
 #include "d10handler.h"
 #include <fstream>
 
+
+D10Handler::D10Handler(int cport, int baud, char mode[])
+{
+	com_port.initPort(cport, baud, mode);
+}
+
+
 void D10Handler::start()
 {
 	if (!com_port.port_open())

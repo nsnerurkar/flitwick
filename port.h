@@ -9,6 +9,7 @@ public:
     port();
     port(int cport, int baud, char mode[]);
 
+	void initPort(int cport, int baud, char mode[]);
     ~port();
 
     void print(unsigned char buf);
