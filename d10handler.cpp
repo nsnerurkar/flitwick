@@ -7,6 +7,10 @@ D10Handler::D10Handler(int cport, int baud, char mode[])
 	com_port.initPort(cport, baud, mode);
 }
 
+D10Handler::~D10Handler()
+{
+
+}
 
 void D10Handler::start()
 {
@@ -57,12 +61,16 @@ void D10Handler::start()
 		}
 		else
 		{
+			com_port.txbuf.push(ACK_CHAR);
+			com_port.txbuf.push(EOT_CHAR);
+			com_port.transmit();
 			// Receive mode by default.
 			std::string tmp = getReceiveBuffer();
 			if (!tmp.empty())
 				rxStrings.push_back(tmp);
 			com_port.clearTxBuf();
 			com_port.txbuf.push(ACK_CHAR);
+			com_port.txbuf.push(EOT_CHAR);
 			com_port.transmit();			
 			com_port.clearRxBuf();
 			com_port.clearTxBuf();

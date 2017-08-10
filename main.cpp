@@ -21,12 +21,13 @@ compile with the command: gcc demo_rx.c rs232.c -Wall -Wextra -o2 -o test_rx
 
 int main(int argc, char* argv[]) 
 {
-	int com = 3;
+	int com = 12;
 	int baud = 9600;
 	char mode[4] = { '8', 'N', '1', 0 };
 
 	D10Handler dh(com, baud, mode);
 
 	dh.start();
+	return(0);
 }
 
