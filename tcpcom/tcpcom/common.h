@@ -19,12 +19,16 @@
 	#include <netdb.h>  /* Needed for getaddrinfo() and freeaddrinfo() */
 	#include <unistd.h> /* Needed for close() */
 
-	typedef int SOCKET;
+        typedef int SOCKET;
+        
+        #define SOCKET_ERROR -1
+        #define INVALID_SOCKET -1
 #endif
 
 #include <deque>
 #include <vector>
 #include <string>
+#include <string.h>
 
 
 #endif //_COMMON_H_
