@@ -1,0 +1,18 @@
+#include "tcpHandler.h"
+
+
+tcphandler::tcphandler()
+{
+  isValid = true;
+  rxBuf.clear();
+  txBuf.clear();
+}
+
+tcphandler::tcphandler(const char* address, int port)
+{
+  isValid = init(address,port);
+  rxBuf.clear();
+  txBuf.clear();
+}
+
+

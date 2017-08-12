@@ -1,0 +1,17 @@
+#ifndef _TCPHANDLER_H_
+#define _TCPHANDLER_h_
+
+#include "common.h"
+
+class tcphandler
+{
+
+
+
+private:
+  std::queue<char> rxBuf;
+  std::queue<char> txBuf;
+}
+
+#endif //_TCPHANDLER_H_
+

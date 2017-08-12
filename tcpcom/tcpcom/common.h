@@ -22,7 +22,9 @@
 	typedef int SOCKET;
 #endif
 
-
+#include <deque>
+#include <vector>
+#include <string>
 
 
 #endif //_COMMON_H_
