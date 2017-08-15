@@ -237,16 +237,32 @@ public:
 
 #define INVALID_D10_MESSAGE = 0
 
+
 class d10lis
 {
+private:
+    d10Message* pMsg;
+    char msgType;
+    unsigned short txMsgNum;
 public:
-  d10lis();
-  ~d10lis();
+    d10lis();
+    ~d10lis();
 
-  int parseMessage (const char*, int);
-  void forgetLastFrame();
-  void processData();
-};
+    int parseMessage (const char*, int);
+    void forgetLastFrame();
+    void processData();
+
+    void calcCheckSum(const char* buf, int size, unsigned char* high, unsigned char* low);
+    bool verifyCheckSum(const char* msgStr, int size);
+
+    std::string wrapLayer2Msg(const std::string& layer2msg);
+    std::string extractLayer2Msg(const std::string& layer1msg);
+
+    bool verifyMsgIntegrity(const std::string& layer1msg);
+
+    void resetMsgNum() { txMsgNum = 1; }
+    void incrementMsgNum() { txMsgNum = (txMsgNum == 7) ? 0 : ++txMsgNum; }
+    };
 
 
 

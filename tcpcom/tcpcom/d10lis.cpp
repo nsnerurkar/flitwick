@@ -594,3 +594,126 @@ bool d10ResultRecordMessage::validate()
 		return true;
 }
 
+d10lis::d10lis()
+{
+
+}
+
+d10lis::~d10lis()
+{
+
+}
+
+int d10lis::parseMessage (const char* pRawMsg, int size)
+{
+    // Verify Checksum
+    if(!verifyCheckSum(pRawMsg,size))
+        return INVALID_D10_MESSAGE;
+    
+    // Remove layer one characters. That is first two and last 6
+    std::string layer2msg = extractLayer2Msg(pRawMsg);
+    msgType = layer2msg[0];
+    switch(msgType)
+    {
+        case 'H':
+            pMsg = new d10MessageHeader();
+            break;
+        case 'P':
+            pMsg = new d10PatientRecordMessage();
+            break;
+        case 'O':
+            pMsg = new d10TestOrderRecordMessage();
+            break;
+        case 'Q':
+            pMsg = new d10RequestInfoMessage();
+            break;
+        case 'R':
+            pMsg = new d10ResultRecordMessage();
+            break;
+        case 'L':
+            pMsg = new d10TerminationMessage();
+            break;
+        default:
+            return INVALID_D10_MESSAGE;
+    }
+
+    if(!pMsg->parseMessage(layer2msg))
+        return INVALID_D10_MESSAGE;
+
+    if(!pMsg->validate())
+        return INVALID_D10_MESSAGE;
+    return 1;
+}
+void forgetLastFrame();
+void processData();
+
+
+void d10lis::calcCheckSum(const char* buf, int size, unsigned char* high, unsigned char* low)
+{
+	int checksum = 0;
+	int i;
+	char strChkSum[10];
+	for (i = size - 1; i > 0; --i)
+	{
+		checksum += (unsigned char)buf[i];
+	}
+
+	checksum %= 256;
+
+	sprintf(strChkSum, "%.2X", checksum);
+	*high = strChkSum[0];
+	*low = strChkSum[1];
+}
+
+
+bool d10lis::verifyCheckSum(const char* msgStr, int size)
+{
+	// The string is saw. Remove the characters not needed for checksum before passing.
+	unsigned char aHighCS, aLowCS, eHighCS, eLowCS;
+	aHighCS = msgStr[size - 4];
+	aLowCS = msgStr[size - 3];
+
+    char* pMsgSubstr = &msgStr[1];
+
+	calcCheckSum(pMsgSubstr, size-5 &eHighCS, &eLowCS);
+
+	if (eHighCS != aHighCS || eLowCS != aLowCS)
+		return false;
+	else
+		return true;
+}
+
+std::string d10lis::wrapLayer2Msg(const std::string& layer2msg)
+{
+	std::string retStr(" ");
+	unsigned char chkH, chkL;
+	char buf[5];
+
+	retStr[0] = STX_CHAR;
+	retStr += std::to_string(msgNum);
+	retStr += layer2msg + (char)ETX_CHAR;
+	calcCheckSum(retStr, &chkH, &chkL);
+	buf[0] = chkH;
+	buf[1] = chkL;
+	buf[2] = CR_CHAR;
+	buf[3] = LF_CHAR;
+	buf[4] = 0;
+
+	retStr += buf;
+	incrementMsgNum();
+	return(retStr);
+}
+
+std::string d10lis::extractLayer2Msg(const char* pRawMsg)
+{
+    std::string layer1msg(pRawMsg);
+	std::string retStr = layer1msg.substr(1, layer1msg.size() - layer1msg.find(ETX_CHAR));
+	return(retStr);
+}
+
+bool d10lis::verifyMsgIntegrity(const std::string& layer1msg)
+{
+	if ((unsigned char)layer1msg[0] != STX_CHAR || layer1msg.find((char)ETX_CHAR) == std::string::npos)
+		return false;
+	return true;	
+}
