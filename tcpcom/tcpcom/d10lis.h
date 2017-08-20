@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "database/sqlite3pp.h"
 
 /* SUPPORTING STRUCTURES */
 /* --------------------- */
@@ -236,7 +237,11 @@ public:
 };
 
 #define INVALID_D10_MESSAGE = 0
-
+#define EOT_CHAR  4
+#define ETX_CHAR  3
+#define STX_CHAR  2
+#define ACK_CHAR  6
+#define NAK_CHAR  21
 
 class d10lis
 {
@@ -244,7 +249,7 @@ private:
     d10Message* pMsg;
     char msgType;
     std::string rxCurrOrder;
-    // DataLayer dt;
+    sqlite3pp::database* pDb;
     unsigned short txMsgNum;
 public:
     d10lis();

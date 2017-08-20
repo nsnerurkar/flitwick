@@ -13,9 +13,9 @@ int main(int argc, char *argv[])
         std::cout << "Initializing" << std::endl;
     }
 
-    while(1)
+    while(true)
     {
-        if(tcp->receive() && (tcp->getLstRecvdChar() == 3 || tcp->getLstRecvdChar() == 4))
+        if(tcp->receive() && tcp->getLstRecvdChar() == EOT_CHAR )
         {
             // message was received and had EOT or ETX
             char* buf;

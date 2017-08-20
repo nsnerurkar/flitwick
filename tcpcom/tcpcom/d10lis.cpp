@@ -1,6 +1,6 @@
 #include "d10lis.h"
 #include <string>
-
+#include "database/sqlite3pp.h"
 
 /*-------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------*/
@@ -596,12 +596,12 @@ bool d10ResultRecordMessage::validate()
 
 d10lis::d10lis()
 {
-
+    pDb = new sqlite3pp::database("D10.db");
 }
 
 d10lis::~d10lis()
 {
-
+    delete(pDb);
 }
 
 int d10lis::parseMessage (const char* pRawMsg, int size)
@@ -660,12 +660,18 @@ void d10lis::processData()
             rxCurrOrder = '';
             break;
         case 'O':
-            rxCurrOrder = dynamic_cast<d10TestOrderRecordMessage*>(pMsg)->SpecimenId;
+            rxCurrOrder = dynamic_cast<d10TestOrderRecordMessage*>(pMsg)->InstSpecId;
             break;
         case 'R':
-            // Get the result and build a data structure. Then Use the Data Layer to write it to db.
+            std::string sProp = dynamic_cast<d10ResultRecordMessage>(pMsg)->UnivTestId->t4 + ' ' + dynamic_cast<d10ResultRecordMessage>(pMsg)->UnivTestId->t5;
+            sqlite3pp::command cmd(*pDb, "INSERT INTO D10Result (orderID,Property,Value) VALUES (?, ?, ?)");
+            cmd.bind(1, rxCurrOrder, sqlite3pp::nocopy);
+            cmd.bind(2,sProp, sqlite3pp::nocopy);
+            cmd.bind(3,dynamic_cast<d10ResultRecordMessage>(pMsg)->MeasVal, sqlite3pp::nocopy);
+            cmd.execute();
+            break;
         default:
-            
+            // Do nothing.
     }
 }
 
