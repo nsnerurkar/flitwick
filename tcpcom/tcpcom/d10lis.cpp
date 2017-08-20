@@ -644,8 +644,30 @@ int d10lis::parseMessage (const char* pRawMsg, int size)
         return INVALID_D10_MESSAGE;
     return 1;
 }
-void forgetLastFrame();
-void processData();
+
+void d10lis::forgetLastFrame()
+{
+    delete(pMsg);
+    pMsg = NULL;
+    msgType = 0;
+}
+
+void d10lis::processData()
+{
+    switch(msgType)
+    {
+        case 'H':
+            rxCurrOrder = '';
+            break;
+        case 'O':
+            rxCurrOrder = dynamic_cast<d10TestOrderRecordMessage*>(pMsg)->SpecimenId;
+            break;
+        case 'R':
+            // Get the result and build a data structure. Then Use the Data Layer to write it to db.
+        default:
+            
+    }
+}
 
 
 void d10lis::calcCheckSum(const char* buf, int size, unsigned char* high, unsigned char* low)
@@ -707,7 +729,7 @@ std::string d10lis::wrapLayer2Msg(const std::string& layer2msg)
 std::string d10lis::extractLayer2Msg(const char* pRawMsg)
 {
     std::string layer1msg(pRawMsg);
-	std::string retStr = layer1msg.substr(1, layer1msg.size() - layer1msg.find(ETX_CHAR));
+	std::string retStr = layer1msg.substr(layer1msg.find(STX_CHAR), layer1msg.size() - layer1msg.find(ETX_CHAR));
 	return(retStr);
 }
 

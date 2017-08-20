@@ -243,6 +243,8 @@ class d10lis
 private:
     d10Message* pMsg;
     char msgType;
+    std::string rxCurrOrder;
+    // DataLayer dt;
     unsigned short txMsgNum;
 public:
     d10lis();
