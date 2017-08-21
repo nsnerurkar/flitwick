@@ -37,10 +37,10 @@
 #include <tuple>
 
 #ifdef SQLITE3PP_LOADABLE_EXTENSION
-#include "sqlite3ext.h"
+#include <sqlite3ext.h>
 SQLITE_EXTENSION_INIT1
 #else
-#include "sqlite3.h"
+#  include "sqlite3.h"
 #endif
 
 namespace sqlite3pp
@@ -60,7 +60,6 @@ namespace sqlite3pp
   };
 
   class null_type {};
-  extern null_type ignore;
 
   class noncopyable
   {
@@ -131,7 +130,7 @@ namespace sqlite3pp
     void set_authorize_handler(authorize_handler h);
 
    private:
-    database(sqlite3* pdb);
+    database(sqlite3* pdb) : db_(pdb), borrowing_(true) {}
 
    private:
     sqlite3* db_;
@@ -341,5 +340,7 @@ namespace sqlite3pp
   };
 
 } // namespace sqlite3pp
+
+#include "sqlite3pp.ipp"
 
 #endif

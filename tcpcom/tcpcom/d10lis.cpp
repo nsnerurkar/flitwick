@@ -1,6 +1,6 @@
 #include "d10lis.h"
 #include <string>
-#include "database/sqlite3pp.h"
+#include "sqlite3pp.h"
 
 /*-------------------------------------------------------------------------------------------------*/
 /*-------------------------------------------------------------------------------------------------*/
@@ -654,24 +654,24 @@ void d10lis::forgetLastFrame()
 
 void d10lis::processData()
 {
+    std::string sProp;
+    sqlite3pp::command* pCmd;
     switch(msgType)
     {
         case 'H':
-            rxCurrOrder = '';
+            rxCurrOrder = "";
             break;
         case 'O':
             rxCurrOrder = dynamic_cast<d10TestOrderRecordMessage*>(pMsg)->InstSpecId;
             break;
         case 'R':
-            std::string sProp = dynamic_cast<d10ResultRecordMessage>(pMsg)->UnivTestId->t4 + ' ' + dynamic_cast<d10ResultRecordMessage>(pMsg)->UnivTestId->t5;
-            sqlite3pp::command cmd(*pDb, "INSERT INTO D10Result (orderID,Property,Value) VALUES (?, ?, ?)");
-            cmd.bind(1, rxCurrOrder, sqlite3pp::nocopy);
-            cmd.bind(2,sProp, sqlite3pp::nocopy);
-            cmd.bind(3,dynamic_cast<d10ResultRecordMessage>(pMsg)->MeasVal, sqlite3pp::nocopy);
-            cmd.execute();
+            sProp = dynamic_cast<d10ResultRecordMessage*>(pMsg)->UnivTestId.t4 + ' ' + dynamic_cast<d10ResultRecordMessage*>(pMsg)->UnivTestId.t5;
+            pCmd = new sqlite3pp::command(*pDb, "INSERT INTO D10Result (orderID,Property,Value) VALUES (?, ?, ?)");
+            pCmd->bind(1, rxCurrOrder, sqlite3pp::nocopy);
+            pCmd->bind(2,sProp, sqlite3pp::nocopy);
+            pCmd->bind(3,dynamic_cast<d10ResultRecordMessage*>(pMsg)->MeasVal, sqlite3pp::nocopy);
+            pCmd->execute();
             break;
-        default:
-            // Do nothing.
     }
 }
 
@@ -703,7 +703,7 @@ bool d10lis::verifyCheckSum(const char* msgStr, int size)
 
     char* pMsgSubstr = &msgStr[1];
 
-	calcCheckSum(pMsgSubstr, size-5 &eHighCS, &eLowCS);
+	calcCheckSum(pMsgSubstr, size-5, &eHighCS, &eLowCS);
 
 	if (eHighCS != aHighCS || eLowCS != aLowCS)
 		return false;
@@ -718,9 +718,9 @@ std::string d10lis::wrapLayer2Msg(const std::string& layer2msg)
 	char buf[5];
 
 	retStr[0] = STX_CHAR;
-	retStr += std::to_string(msgNum);
+	retStr += std::to_string(txMsgNum);
 	retStr += layer2msg + (char)ETX_CHAR;
-	calcCheckSum(retStr, &chkH, &chkL);
+	calcCheckSum(retStr.c_str(),retStr.length(), &chkH, &chkL);
 	buf[0] = chkH;
 	buf[1] = chkL;
 	buf[2] = CR_CHAR;

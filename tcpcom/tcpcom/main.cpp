@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 
     while(true)
     {
-        if(tcp->receive() && tcp->getLstRecvdChar() == EOT_CHAR )
+        if(tcp->receive() && tcp->getLastRecvdChar() == EOT_CHAR )
         {
             // message was received and had EOT or ETX
             char* buf;

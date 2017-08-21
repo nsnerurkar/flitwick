@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "database/sqlite3pp.h"
+#include "sqlite3pp.h"
 
 /* SUPPORTING STRUCTURES */
 /* --------------------- */
@@ -236,12 +236,14 @@ public:
 	bool validate();
 };
 
-#define INVALID_D10_MESSAGE = 0
+#define INVALID_D10_MESSAGE 0
 #define EOT_CHAR  4
 #define ETX_CHAR  3
 #define STX_CHAR  2
 #define ACK_CHAR  6
 #define NAK_CHAR  21
+#define CR_CHAR   10
+#define LF_CHAR   13
 
 class d10lis
 {
@@ -263,7 +265,7 @@ public:
     bool verifyCheckSum(const char* msgStr, int size);
 
     std::string wrapLayer2Msg(const std::string& layer2msg);
-    std::string extractLayer2Msg(const std::string& layer1msg);
+    std::string extractLayer2Msg(const char* pRawMsg);
 
     bool verifyMsgIntegrity(const std::string& layer1msg);
 

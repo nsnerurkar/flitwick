@@ -1,5 +1,5 @@
 #include "tcphandler.h"
-
+#include "quicksock.h"
 
 tcphandler::tcphandler()
 {
@@ -39,11 +39,11 @@ bool tcphandler::init(const char* address, int port)
   return true;
 }
 
-bool tcphandler::recieve()
+bool tcphandler::receive()
 {  
   char temprxBuf[2000];
   int recvSize = 2000;
-  if(recvSock(s, temprxBuf, recvSize))
+  if(recvSock(sock, temprxBuf, recvSize))
   {
     for(int i = 0; i < recvSize;i++)
       rxBuf.push_back(temprxBuf[i]);
@@ -54,16 +54,16 @@ bool tcphandler::recieve()
 
 bool tcphandler::transmit()
 {
-    if(!txBuf.empty)
+    if(!txBuf.empty())
     {
-      len = txBuf.length();
+      int len = txBuf.size();
       char* tempbuf = new char[len];
       for(int i = 0; i < len;i++)
       {
-	tempbuf[i] = txBuf.front();
-	txBuf.pop_front();
+	        tempbuf[i] = txBuf.front();
+	        txBuf.pop_front();
       }            
-      return sendSock(s, tempbuf,len);
+      return sendSock(sock, tempbuf,len);
     }
     return true;
 }
@@ -77,7 +77,7 @@ char tcphandler::getLastRecvdChar()
 
 int tcphandler::readRxBuf(char* buf)
 {
-  bytes = rxBuf.length();
+  int bytes = rxBuf.size();
   if(buf)
     delete(buf);
   buf = new char[bytes];
