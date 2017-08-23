@@ -606,12 +606,16 @@ d10lis::~d10lis()
 
 int d10lis::parseMessage (const char* pRawMsg, int size)
 {
+    std::string sRawMsg(pRawMsg);
+    std::string layer2msg = extractLayer2Msg(pRawMsg);
+    if(layer2msg.empty() && sRawMsg.find(5) >= 0)
+        return 1;
     // Verify Checksum
-    if(!verifyCheckSum(pRawMsg,size))
-        return INVALID_D10_MESSAGE;
+    //if(!verifyCheckSum(pRawMsg+sRawMsg.find(STX_CHAR),size-sRawMsg.find(STX_CHAR)))
+      //  return INVALID_D10_MESSAGE;
     
     // Remove layer one characters. That is first two and last 6
-    std::string layer2msg = extractLayer2Msg(pRawMsg);
+    
     msgType = layer2msg[0];
     switch(msgType)
     {
@@ -698,12 +702,12 @@ bool d10lis::verifyCheckSum(const char* msgStr, int size)
 {
 	// The string is saw. Remove the characters not needed for checksum before passing.
 	unsigned char aHighCS, aLowCS, eHighCS, eLowCS;
-	aHighCS = msgStr[size - 4];
-	aLowCS = msgStr[size - 3];
+	aHighCS = msgStr[size - 5];
+	aLowCS = msgStr[size - 4];
 
     char* pMsgSubstr = &msgStr[1];
 
-	calcCheckSum(pMsgSubstr, size-5, &eHighCS, &eLowCS);
+	calcCheckSum(pMsgSubstr, size-6, &eHighCS, &eLowCS);
 
 	if (eHighCS != aHighCS || eLowCS != aLowCS)
 		return false;
@@ -735,7 +739,11 @@ std::string d10lis::wrapLayer2Msg(const std::string& layer2msg)
 std::string d10lis::extractLayer2Msg(const char* pRawMsg)
 {
     std::string layer1msg(pRawMsg);
-	std::string retStr = layer1msg.substr(layer1msg.find(STX_CHAR), layer1msg.size() - layer1msg.find(ETX_CHAR));
+    int stPos = layer1msg.find(STX_CHAR);
+    if (stPos < 0)
+        return "";
+    int enPos = layer1msg.find(ETX_CHAR) - stPos-3;
+	std::string retStr = layer1msg.substr(stPos+2,enPos);
 	return(retStr);
 }
 

@@ -4,21 +4,23 @@
 
 int main(int argc, char *argv[])
 {
+    std::cout << "Starting..." << std::endl;
     tcphandler* tcp = new tcphandler("10.10.10.60",8080);
-    d10lis* d10FSM = new d10lis();
+    d10lis* d10FSM = new d10lis();    
     while(!tcp->isValid)
     {
         std::cout << "Init failed..." << std::endl;
         usleep(100000);
         std::cout << "Initializing" << std::endl;
     }
-
+    std::cout << "Initialized..." << std::endl;
     while(true)
     {
         if(tcp->receive() && tcp->getLastRecvdChar() == EOT_CHAR )
         {
+            std::cout << "Processing..." << std::endl;
             // message was received and had EOT or ETX
-            char* buf;
+            char buf[2048];
             int recv_size = tcp->readRxBuf(buf);
             // Parse Message
             int messageType = d10FSM->parseMessage(buf,recv_size);
@@ -33,7 +35,7 @@ int main(int argc, char *argv[])
                 d10FSM->processData();
             }
         }
-        usleep(100000);
+        //usleep(100000);
     }
     return 0;
 }

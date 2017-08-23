@@ -41,12 +41,14 @@ bool tcphandler::init(const char* address, int port)
 
 bool tcphandler::receive()
 {  
-  char temprxBuf[2000];
-  int recvSize = 2000;
+  unsigned char temprxBuf[10];
+  int recvSize = 1;
   if(recvSock(sock, temprxBuf, recvSize))
   {
     for(int i = 0; i < recvSize;i++)
+    {
       rxBuf.push_back(temprxBuf[i]);
+    }
     return true;
   }
   return false;
@@ -57,7 +59,7 @@ bool tcphandler::transmit()
     if(!txBuf.empty())
     {
       int len = txBuf.size();
-      char* tempbuf = new char[len];
+      unsigned char* tempbuf = new unsigned char[len];
       for(int i = 0; i < len;i++)
       {
 	        tempbuf[i] = txBuf.front();
@@ -78,14 +80,12 @@ char tcphandler::getLastRecvdChar()
 int tcphandler::readRxBuf(char* buf)
 {
   int bytes = rxBuf.size();
-  if(buf)
-    delete(buf);
-  buf = new char[bytes];
   for(int i = 0; i < bytes;++i)
   {
     buf[i] = rxBuf.front();
     rxBuf.pop_front();
   }
+  buf[bytes] = 0;
   return bytes;
 }
 
@@ -99,7 +99,7 @@ void tcphandler::writeTxBuf(const char* buf, int size)
 
 void tcphandler::transmitNAK()
 {
-  char buf[2];
+  unsigned char buf[2];
   buf[0] = 21;
   buf[1] = 4;
   writeTxBuf(buf,2);
@@ -108,7 +108,7 @@ void tcphandler::transmitNAK()
 
 void tcphandler::transmitACK()
 {
-  char buf[2];
+  unsigned char buf[2];
   buf[0] = 6;
   buf[1] = 4;
   writeTxBuf(buf,2);

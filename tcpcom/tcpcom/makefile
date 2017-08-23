@@ -1,6 +1,6 @@
 # Declaration of variables
 CC = g++
-CC_FLAGS = -w -std=c++11 -fpermissive
+CC_FLAGS = -g -w -std=c++11 -fpermissive
 LD_FLAGS = -ldl -pthread
  
 # File names
@@ -11,7 +11,7 @@ OBJECTS = $(SOURCES:.cpp=.o) sqlite3.o
 # Main target
 $(EXEC): $(OBJECTS)
 	$(CC) $(CC_FLAGS) sqlite3.o tcphandler.o quicksock.o d10lis.o main.o $(LD_FLAGS) -o $(EXEC) 
-	rm *.o
+
  
 # To obtain object files
 %.o: %.cpp

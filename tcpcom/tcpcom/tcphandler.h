@@ -26,8 +26,8 @@ public:
   bool isValid;  
 private:
   SOCKET sock;
-  std::deque<char> rxBuf;
-  std::deque<char> txBuf;
+  std::deque<unsigned char> rxBuf;
+  std::deque<unsigned char> txBuf;
 };
 
 #endif //_TCPHANDLER_H_

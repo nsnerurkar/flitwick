@@ -99,11 +99,11 @@ bool bindSock(const SOCKET& sock, int port)
  * Args - flags - Flags to pass to receive
  * Returns boolean for success.
  */
-bool recvSock(const SOCKET& sock, char* buf, int& recvSize, int flags)
+bool recvSock(const SOCKET& sock, void* buf, int& recvSize, int flags)
 {
-	memset(buf, 0, MAX_BUF_LEN);
+	memset(buf, 0, recvSize);
 	
-	if ((recvSize = recv(sock, buf, MAX_BUF_LEN, flags)) == SOCKET_ERROR)
+	if ((recvSize = recv(sock, buf, recvSize, flags)) == SOCKET_ERROR)
 	{
 		return false;
 	}
@@ -119,12 +119,15 @@ bool recvSock(const SOCKET& sock, char* buf, int& recvSize, int flags)
 * Args - flags - Flags to pass to send
 * Returns boolean for success.
 */
-bool sendSock(const SOCKET& sock, const char* buf, int bufSize, int flags)
+bool sendSock(const SOCKET& sock, const void* buf, int bufSize, int flags)
 {
-	
-	if (send(sock, buf, bufSize, flags) < 0)
+	int bytesSent;
+	while(bufSize>0)
 	{
-		return false;
+		bytesSent = send(sock, buf, bufSize, flags);
+		if (bytesSent < 0) return false;
+		buf += bytesSent;
+		bufSize -= bytesSent;
 	}
 	return true;
 }

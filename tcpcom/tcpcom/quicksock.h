@@ -20,8 +20,8 @@ int closeSock(SOCKET sock);				// Socket Close
 bool createSock(SOCKET& sock);			// Create a Socket
 bool connectSock(const SOCKET& sock, int port, char* addr);
 bool bindSock(const SOCKET& sock, int port);
-bool recvSock(const SOCKET& sock, char* server_reply, int& recvSize, int flags = 0);
-bool sendSock(const SOCKET& sock, const char* buf, int bufSize, int flags = 0);
+bool recvSock(const SOCKET& sock, void* server_reply, int& recvSize, int flags = 0);
+bool sendSock(const SOCKET& sock, const void* buf, int bufSize, int flags = 0);
 
 #ifdef __cplusplus
 }
