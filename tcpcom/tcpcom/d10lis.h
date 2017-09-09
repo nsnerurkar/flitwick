@@ -5,6 +5,14 @@
 #include <vector>
 #include "sqlite3pp.h"
 
+#define HEADER_MSG 1
+#define TERMINATION_MSG 2
+#define PATIENT_MSG 3
+#define ORDER_MSG 4
+#define RESULT_MSG 5
+#define REQUEST_MSG 6
+#define ENQ_MSG 7
+
 /* SUPPORTING STRUCTURES */
 /* --------------------- */
 
@@ -67,7 +75,8 @@ public:
 public:
     virtual bool parseMessage(const std::string&) = 0;
     virtual std::string getMessage() = 0;
-	virtual bool validate() = 0;
+    virtual bool validate() = 0;
+    virtual int getType() = 0;
 };
 
 class d10MessageHeader : public d10Message
@@ -91,7 +100,8 @@ public:
     std::string getSenderInfoStr();
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return HEADER_MSG; }
 };
 
 
@@ -103,7 +113,8 @@ public:
 public:
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return TERMINATION_MSG; }
 };
 
 
@@ -127,7 +138,8 @@ public:
     std::string getTestIdString(const TestId& tId);
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return REQUEST_MSG; }
 };
 
 class d10PatientRecordMessage : public d10Message
@@ -169,7 +181,8 @@ public:
 public:
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return PATIENT_MSG; }
 };
 
 
@@ -211,7 +224,8 @@ public:
 public:
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return ORDER_MSG; }
 };
 
 class d10ResultRecordMessage : public d10Message
@@ -233,7 +247,17 @@ public:
 public:
     std::string getMessage();
     bool parseMessage(const std::string& msg);
-	bool validate();
+    bool validate();
+    int getType() { return RESULT_MSG; }
+};
+
+class d10EnqMessage : public d10Message
+{
+public:
+    std::string getMessage(){ return ""; }
+    bool parseMessage(const std::string& msg){}
+    bool validate(){return true;}
+    int getType() { return ENQ_MSG; }
 };
 
 #define INVALID_D10_MESSAGE 0
@@ -248,8 +272,6 @@ public:
 class d10lis
 {
 private:
-    d10Message* pMsg;
-    char msgType;
     std::string rxCurrOrder;
     sqlite3pp::database* pDb;
     unsigned short txMsgNum;
@@ -257,15 +279,15 @@ public:
     d10lis();
     ~d10lis();
 
-    int parseMessage (const char*, int);
+    d10Message* parseMessage (const std::string&, bool&);
     void forgetLastFrame();
-    void processData();
+    void processData(d10Message* pMsg);
 
     void calcCheckSum(const char* buf, int size, unsigned char* high, unsigned char* low);
     bool verifyCheckSum(const char* msgStr, int size);
 
     std::string wrapLayer2Msg(const std::string& layer2msg);
-    std::string extractLayer2Msg(const char* pRawMsg);
+    std::string extractLayer2Msg(const std::string& layer1msg);
 
     bool verifyMsgIntegrity(const std::string& layer1msg);
 

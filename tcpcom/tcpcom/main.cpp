@@ -1,41 +1,36 @@
 #include <iostream>
-#include "tcphandler.h"
-#include "d10lis.h"
+#include "d10handler.h"
+#include <thread>
+
 
 int main(int argc, char *argv[])
 {
     std::cout << "Starting..." << std::endl;
-    tcphandler* tcp = new tcphandler("10.10.10.60",8080);
-    d10lis* d10FSM = new d10lis();    
-    while(!tcp->isValid)
+    d10handler d10H(13,9600,"8N1");
+       
+    while(!d10H.isValid)
     {
         std::cout << "Init failed..." << std::endl;
         usleep(100000);
-        std::cout << "Initializing" << std::endl;
+        std::cout << "Initializing" << std::endl;        
     }
     std::cout << "Initialized..." << std::endl;
-    while(true)
+    
+    std::thread txThread(&d10handler::transmit,std::ref(d10H));
+    std::thread rxThread(&d10handler::receive,std::ref(d10H));
+    std::thread procThread(&d10handler::process,std::ref(d10H));
+
+    char ch = 0;
+    while(ch != 'q')
     {
-        if(tcp->receive() && tcp->getLastRecvdChar() == EOT_CHAR )
-        {
-            std::cout << "Processing..." << std::endl;
-            // message was received and had EOT or ETX
-            char buf[2048];
-            int recv_size = tcp->readRxBuf(buf);
-            // Parse Message
-            int messageType = d10FSM->parseMessage(buf,recv_size);
-            if(messageType == INVALID_D10_MESSAGE) 
-            {
-                tcp->transmitNAK();
-                d10FSM->forgetLastFrame();
-            }
-            else
-            {
-                tcp->transmitACK();
-                d10FSM->processData();
-            }
-        }
-        //usleep(100000);
+        std::cin>>ch;
     }
+
+    d10H.stop = true;
+
+    rxThread.join();
+    txThread.join();
+    procThread.join();
+
     return 0;
 }

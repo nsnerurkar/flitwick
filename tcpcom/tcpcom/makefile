@@ -6,11 +6,11 @@ LD_FLAGS = -ldl -pthread
 # File names
 EXEC = d10server
 SOURCES = $(wildcard *.c*)
-OBJECTS = $(SOURCES:.cpp=.o) sqlite3.o
+OBJECTS = $(SOURCES:.cpp=.o) sqlite3.o rs232.o
 
 # Main target
 $(EXEC): $(OBJECTS)
-	$(CC) $(CC_FLAGS) sqlite3.o tcphandler.o quicksock.o d10lis.o main.o $(LD_FLAGS) -o $(EXEC) 
+	$(CC) $(CC_FLAGS) sqlite3.o nqueue.o d10handler.o rs232.o quicksock.o d10lis.o main.o $(LD_FLAGS) -o $(EXEC) 
 
  
 # To obtain object files

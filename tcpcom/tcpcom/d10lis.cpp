@@ -604,20 +604,23 @@ d10lis::~d10lis()
     delete(pDb);
 }
 
-int d10lis::parseMessage (const char* pRawMsg, int size)
-{
-    std::string sRawMsg(pRawMsg);
-    std::string layer2msg = extractLayer2Msg(pRawMsg);
+d10Message* d10lis::parseMessage (const std::string& sRawMsg, bool& isValid)
+{    
+    d10Message* pMsg;
+    std::string layer2msg = extractLayer2Msg(sRawMsg);
     if(layer2msg.empty() && sRawMsg.find(5) >= 0)
-        return 1;
+    {
+        pMsg = new d10EnqMessage();
+        isValid = true;
+        return pMsg;
+    }
     // Verify Checksum
     //if(!verifyCheckSum(pRawMsg+sRawMsg.find(STX_CHAR),size-sRawMsg.find(STX_CHAR)))
-      //  return INVALID_D10_MESSAGE;
+      //  return false;
     
     // Remove layer one characters. That is first two and last 6
-    
-    msgType = layer2msg[0];
-    switch(msgType)
+
+    switch(layer2msg[0])
     {
         case 'H':
             pMsg = new d10MessageHeader();
@@ -638,37 +641,30 @@ int d10lis::parseMessage (const char* pRawMsg, int size)
             pMsg = new d10TerminationMessage();
             break;
         default:
-            return INVALID_D10_MESSAGE;
+            return false;
     }
 
     if(!pMsg->parseMessage(layer2msg))
-        return INVALID_D10_MESSAGE;
+        return false;
 
-    if(!pMsg->validate())
-        return INVALID_D10_MESSAGE;
-    return 1;
+    isValid = pMsg->validate();
+    return pMsg;
 }
 
-void d10lis::forgetLastFrame()
-{
-    delete(pMsg);
-    pMsg = NULL;
-    msgType = 0;
-}
 
-void d10lis::processData()
+void d10lis::processData(d10Message* pMsg)
 {
     std::string sProp;
     sqlite3pp::command* pCmd;
-    switch(msgType)
+    switch(pMsg->getType())
     {
-        case 'H':
+        case HEADER_MSG:
             rxCurrOrder = "";
             break;
-        case 'O':
+        case ORDER_MSG:
             rxCurrOrder = dynamic_cast<d10TestOrderRecordMessage*>(pMsg)->InstSpecId;
             break;
-        case 'R':
+        case RESULT_MSG:
             sProp = dynamic_cast<d10ResultRecordMessage*>(pMsg)->UnivTestId.t4 + ' ' + dynamic_cast<d10ResultRecordMessage*>(pMsg)->UnivTestId.t5;
             pCmd = new sqlite3pp::command(*pDb, "INSERT INTO D10Result (orderID,Property,Value) VALUES (?, ?, ?)");
             pCmd->bind(1, rxCurrOrder, sqlite3pp::nocopy);
@@ -736,9 +732,8 @@ std::string d10lis::wrapLayer2Msg(const std::string& layer2msg)
 	return(retStr);
 }
 
-std::string d10lis::extractLayer2Msg(const char* pRawMsg)
+std::string d10lis::extractLayer2Msg(const std::string& layer1msg)
 {
-    std::string layer1msg(pRawMsg);
     int stPos = layer1msg.find(STX_CHAR);
     if (stPos < 0)
         return "";
